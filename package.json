@@ -1,0 +1,30 @@
+{
+  "name": "deepmountain",
+  "version": "1.0.0",
+  "description": "Deep Mountain Interface",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enriquegarciaarias/deepmountain.git"
+  },
+  "keywords": [
+    "Deep",
+    "Learning"
+  ],
+  "author": "EGA",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/enriquegarciaarias/deepmountain/issues"
+  },
+  "homepage": "https://github.com/enriquegarciaarias/deepmountain#readme",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mongodb": "^6.9.0"
+  }
+}
