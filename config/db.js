@@ -7,7 +7,7 @@ let db;
 
 async function connectToDB() {
   try {
-    const client = await MongoClient.connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = await MongoClient.connect(mongoURL, { useUnifiedTopology: true  });
     db = client.db('CorpusData');
     console.log('Successfully connected to the database CorpusData');
   } catch (error) {
