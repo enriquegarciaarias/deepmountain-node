@@ -14,6 +14,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
+        <h2>Corpus Manager</h2>
         <Example />
     </ThemeProvider>
   </StrictMode>,

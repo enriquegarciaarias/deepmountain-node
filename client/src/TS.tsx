@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Box, Typography } from '@mui/material';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -7,7 +8,7 @@ import {
   type MRT_PaginationState,
   type MRT_SortingState,
 } from 'material-react-table';
-
+import { format } from 'date-fns';
 
 type UserApiResponse = {
   data: Array<User>;
@@ -24,18 +25,14 @@ type User = {
   timestamp: string;
 };
 
-const Example = () => {
-  //data and fetching state
+const corpusManager = () => {
   const [data, setData] = useState<User[]>([]);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
 
-  //table state
-  const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>(
-    [],
-  );
+  const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
@@ -43,7 +40,6 @@ const Example = () => {
     pageSize: 10,
   });
 
-  //if you want to avoid useEffect, look at the React Query example instead
   useEffect(() => {
     const fetchData = async () => {
       if (!data.length) {
@@ -77,13 +73,12 @@ const Example = () => {
       setIsRefetching(false);
     };
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    columnFilters, //re-fetch when column filters change
-    globalFilter, //re-fetch when global filter changes
-    pagination.pageIndex, //re-fetch when page index changes
-    pagination.pageSize, //re-fetch when page size changes
-    sorting, //re-fetch when sorting changes
+    columnFilters,
+    globalFilter,
+    pagination.pageIndex,
+    pagination.pageSize,
+    sorting,
   ]);
 
   const columns = useMemo<MRT_ColumnDef<User>[]>(
@@ -92,7 +87,6 @@ const Example = () => {
         accessorKey: 'name',
         header: 'APK Name',
       },
-      //column definitions...
       {
         accessorKey: 'typo',
         header: 'Type',
@@ -107,9 +101,22 @@ const Example = () => {
       },
       {
         accessorKey: 'timestamp',
-        header: 'timestamp',
+        header: 'Timestamp',
+        Cell: ({ cell }) => {
+          const timestamp = cell.getValue() as string;
+
+          // Parse the timestamp format "yyyyMMddHHmmss"
+          const year = parseInt(timestamp.slice(0, 4), 10);
+          const month = parseInt(timestamp.slice(4, 6), 10) - 1; // Months are zero-indexed
+          const day = parseInt(timestamp.slice(6, 8), 10);
+          const hour = parseInt(timestamp.slice(8, 10), 10);
+          const minute = parseInt(timestamp.slice(10, 12), 10);
+          const second = parseInt(timestamp.slice(12, 14), 10);
+
+          const date = new Date(year, month, day, hour, minute, second);
+          return isNaN(date.getTime()) ? 'Invalid Date' : format(date, 'yyyy-MM-dd HH:mm:ss');
+        },
       },
-      //end
     ],
     [],
   );
@@ -143,9 +150,34 @@ const Example = () => {
       showProgressBars: isRefetching,
       sorting,
     },
+    //custom expand button rotation
+    muiExpandButtonProps: ({ row, table }) => ({
+      onClick: () => table.setExpanded({ [row.id]: !row.getIsExpanded() }), //only 1 detail panel open at a time
+      sx: {
+        transform: row.getIsExpanded() ? 'rotate(180deg)' : 'rotate(-90deg)',
+        transition: 'transform 0.2s',
+      },
+    }),
+    //conditionally render detail panel
+    renderDetailPanel: ({ row }) =>
+      row.original.name ? (
+        <Box
+          sx={{
+            display: 'grid',
+            margin: 'auto',
+            gridTemplateColumns: '1fr 1fr',
+            width: '100%',
+          }}
+        >
+          <Typography>Name: {row.original.name}</Typography>
+          <Typography>File: {row.original.file}</Typography>
+          <Typography>Url: {row.original.url}</Typography>
+          <Typography>Message: {row.original.message}</Typography>
+        </Box>
+      ) : null,
   });
 
   return <MaterialReactTable table={table} />;
 };
 
-export default Example;
+export default corpusManager;

@@ -69,7 +69,7 @@ const data: Person[] = [
   },
 ];
 
-const Example = () => {
+const corpusManager = () => {
   //should be memoized or stable
   const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
@@ -110,5 +110,5 @@ const Example = () => {
   return <MaterialReactTable table={table} />;
 };
 
-export default Example;
+export default corpusManager;
 
