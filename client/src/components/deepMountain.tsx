@@ -49,7 +49,7 @@ const DeepMountain = () => {
         setIsRefetching(true);
       }
 
-      const url = new URL('http://localhost:5000/api/dataDeep', location.origin);
+      const url = new URL('http://10.201.54.162:5000/api/dataDeep', location.origin);
       url.searchParams.set(
         'start',
         `${pagination.pageIndex * pagination.pageSize}`,

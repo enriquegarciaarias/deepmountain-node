@@ -17,9 +17,10 @@ async function getDatasetJson(req, res) {
     // Read and parse the JSON file
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const jsonData = JSON.parse(fileContent);
+    const totalRowCount = Array.isArray(jsonData) ? jsonData.length : jsonData.data?.length || 0;
 
     // Respond with the JSON data
-    res.json({ data: jsonData });
+    res.json({ data: jsonData, meta: { totalRowCount }  });
   } catch (error) {
     const filePath = req.query.f;
     console.error('Error reading the JSON file: ', error);

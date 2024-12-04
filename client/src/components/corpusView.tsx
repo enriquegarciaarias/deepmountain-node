@@ -57,7 +57,7 @@ const CorpusView = () => {
         setIsRefetching(true);
       }
 
-      const url = new URL('http://localhost:5000/api/corpusView', location.origin);
+      const url = new URL('http://10.201.54.162:5000/api/corpusView', location.origin);
       url.searchParams.set(
         'start',
         `${pagination.pageIndex * pagination.pageSize}`,

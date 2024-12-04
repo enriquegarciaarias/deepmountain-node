@@ -26,7 +26,8 @@ type UserApiResponse = {
 };
 
 type User = {
-  name: string;
+  category: string;
+  text: string;
 };
 
 
@@ -92,7 +93,7 @@ const DatasetJson = () => {
 
   const columns = useMemo<MRT_ColumnDef<User>[]>(
     () => [
-      { accessorKey: 'name', header: 'APK Name', },
+      { accessorKey: 'category', header: 'Category', },
  
     ],
     [],
