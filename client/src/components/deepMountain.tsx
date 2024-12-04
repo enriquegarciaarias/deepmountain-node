@@ -18,14 +18,15 @@ type UserApiResponse = {
 };
 
 type User = {
-  name: string;
-  typo: string;
+  algorithm: string;
+  corpus: string;
   lang: string;
   stat: string;
   timestamp: string;
+  hiper: string;
 };
 
-const corpusManager = () => {
+const DeepMountain = () => {
   const [data, setData] = useState<User[]>([]);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -48,7 +49,7 @@ const corpusManager = () => {
         setIsRefetching(true);
       }
 
-      const url = new URL('http://localhost:5000/api/data', location.origin);
+      const url = new URL('http://localhost:5000/api/dataDeep', location.origin);
       url.searchParams.set(
         'start',
         `${pagination.pageIndex * pagination.pageSize}`,
@@ -84,20 +85,24 @@ const corpusManager = () => {
   const columns = useMemo<MRT_ColumnDef<User>[]>(
     () => [
       {
-        accessorKey: 'name',
-        header: 'APK Name',
+        accessorKey: 'algorithm',
+        header: 'Algoritmo',
       },
       {
-        accessorKey: 'typo',
-        header: 'Type',
+        accessorKey: 'corpus',
+        header: 'Corpus',
       },
       {
-        accessorKey: 'lang',
-        header: 'Language',
+        accessorKey: 'user',
+        header: 'User',
       },
       {
-        accessorKey: 'stat',
-        header: 'Status',
+        accessorKey: 'result.accuracy',
+        header: 'Accuracy',
+        Cell: ({ cell }) => {
+          const accuracy = cell.getValue<number>();
+          return `${(accuracy * 100).toFixed(2)}%`;
+        },
       },
       {
         accessorKey: 'timestamp',
@@ -160,7 +165,7 @@ const corpusManager = () => {
     }),
     //conditionally render detail panel
     renderDetailPanel: ({ row }) =>
-      row.original.name ? (
+      row.original.algorithm ? (
         <Box
           sx={{
             display: 'grid',
@@ -169,10 +174,8 @@ const corpusManager = () => {
             width: '100%',
           }}
         >
-          <Typography>Name: {row.original.name}</Typography>
-          <Typography>File: {row.original.file}</Typography>
-          <Typography>Url: {row.original.url}</Typography>
-          <Typography>Message: {row.original.message}</Typography>
+          <Typography>Hiper: {JSON.stringify(row.original.result, null, 2)}</Typography>
+          <Typography>Hiper: {JSON.stringify(row.original.hiper, null, 2)}</Typography>
         </Box>
       ) : null,
   });
@@ -180,4 +183,4 @@ const corpusManager = () => {
   return <MaterialReactTable table={table} />;
 };
 
-export default corpusManager;
+export default DeepMountain;

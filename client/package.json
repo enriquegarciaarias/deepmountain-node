@@ -17,14 +17,17 @@
     "@mui/x-date-pickers": "^7.16.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.4.5",
     "material-react-table": "^3.0.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "dotenv-webpack": "^8.1.0",
     "typescript": "^5.6.2",
     "vite": "^5.4.4"
   }

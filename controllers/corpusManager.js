@@ -1,25 +1,10 @@
-const { getDB } = require('../config/db');
-
-// Controller function to fetch data from MongoDB
-async function OLDgetDataMongo(req, res) {
-  try {
-    const db = getDB(); // Get the connected database
-    const collection = db.collection('CorpusManager');
-    const results = await collection.find().sort({ timestamp: -1 }).limit(40).toArray();
-    res.json(results);  // Send the results back to the client
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ message: 'Error fetching data' });
-  }
-}
-
-module.exports = { OLDgetDataMongo };
+const { getCorpus } = require('../config/db');
 
 
 // Controller function to fetch data from MongoDB with optional query parameters
-async function getDataMongo(req, res) {
+async function getDataCorpus(req, res) {
   try {
-    const db = getDB();
+    const db = getCorpus();
     const collection = db.collection('CorpusManager');
 
     // Parse query parameters with defaults
@@ -65,4 +50,4 @@ async function getDataMongo(req, res) {
   }
 }
 
-module.exports = { getDataMongo };
+module.exports = { getDataCorpus };
