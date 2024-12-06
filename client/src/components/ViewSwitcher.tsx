@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 const ViewSwitcher = () => {
-  const [activeView, setActiveView] = useState('DeepMountain');
+  const [activeView, setActiveView] = useState('Corpus');
 
   const handleSwitchView = (view: string) => {
     setActiveView(view);
@@ -27,23 +27,24 @@ const ViewSwitcher = () => {
         <Box>
           <Button
             variant="contained"
-            onClick={() => handleSwitchView('DeepMountain')}
-            sx={{ marginRight: 1 }}
-          >
-            Show DeepMountain
-          </Button>
-          <Button
-            variant="contained"
             onClick={() => handleSwitchView('Corpus')}
             sx={{ marginRight: 1 }}
           >
-            Show Corpus
+            Corpus
+          </Button>          
+          <Button
+            variant="contained"
+            onClick={() => handleSwitchView('DeepMountain')}
+            sx={{ marginRight: 1 }}
+          >
+            DeepMountain
           </Button>
+
           <Button
             variant="contained"
             onClick={() => handleSwitchView('Downloader')}
           >
-            Show Downloader
+            Downloader
           </Button>
         </Box>
         <Typography variant="h6">

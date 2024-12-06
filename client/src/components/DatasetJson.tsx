@@ -94,7 +94,7 @@ const DatasetJson = () => {
   const columns = useMemo<MRT_ColumnDef<User>[]>(
     () => [
       { accessorKey: 'category', header: 'Category', },
- 
+      { accessorKey: 'text', header: 'Texto', },
     ],
     [],
   );

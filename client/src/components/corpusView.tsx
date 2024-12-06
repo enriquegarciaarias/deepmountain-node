@@ -12,12 +12,11 @@ import {
   MRT_ActionMenuItem,
 } from 'material-react-table';
 import { format } from 'date-fns';
+const apiUrl = import.meta.env.VITE_API_URL;
 
 type UserApiResponse = {
   data: Array<User>;
-  meta: {
-    totalRowCount: number;
-  };
+  meta: { totalRowCount: number; };
 };
 
 type User = {
@@ -39,14 +38,10 @@ const CorpusView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
-
   const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
-  const [pagination, setPagination] = useState<MRT_PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+  const [pagination, setPagination] = useState<MRT_PaginationState>({ pageIndex: 0, pageSize: 10, });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,11 +52,8 @@ const CorpusView = () => {
         setIsRefetching(true);
       }
 
-      const url = new URL('http://10.201.54.162:5000/api/corpusView', location.origin);
-      url.searchParams.set(
-        'start',
-        `${pagination.pageIndex * pagination.pageSize}`,
-      );
+      const url = new URL(`${apiUrl}/api/corpusView`, location.origin);
+      url.searchParams.set('start', `${pagination.pageIndex * pagination.pageSize}`,);
       url.searchParams.set('size', `${pagination.pageSize}`);
       url.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
       url.searchParams.set('globalFilter', globalFilter ?? '');
@@ -94,10 +86,7 @@ const CorpusView = () => {
     () => [
       { accessorKey: 'appName', header: 'Nombre', },
       { accessorKey: 'ppen', header: 'PP Eng', },
-      {
-        accessorKey: 'ppes',
-        header: 'PP Esp',
-      },
+      { accessorKey: 'ppes', header: 'PP Esp', },
       {
         accessorKey: 'tosen',
         header: 'TOS Eng',
@@ -143,34 +132,42 @@ const CorpusView = () => {
     data,
     enableRowActions: true,
     renderRowActionMenuItems: ({ row }) => {
-      const { file } = row.original.MPP270; // Define `file` here
+      const gdprFile = row.original.gdpr?.file; // Safely access MPP270.file
+      const mppFile = row.original.MPP270?.file; // Safely access MPP270.file
+      const appCorpFile = row.original.APPCorp?.file; // Safely access APPCorp.file
+      const nllpFile = row.original.NLLP2021?.file; // Safely access APPCorp.file
+
       return [
         <MRT_ActionMenuItem
           icon={<DatasetIcon />}
           key="GDPR"
           label="GDPR"
-          onClick={() => console.info('Edit')}
+          onClick={() => navigate(`/datasetJson?f=${encodeURIComponent(gdprFile)}`)}
           table={table}
         />,
-        <MRT_ActionMenuItem
-          icon={<DatasetIcon />}
-          key="MPP270"
-          label="MPP270"
-          onClick={() => navigate(`/datasetJson?f=${encodeURIComponent(file)}`)}
-          table={table}
-        />,
-        <MRT_ActionMenuItem
-          icon={<DatasetIcon />}
-          key="APPCorp"
-          label="APPCorp"
-          onClick={() => console.info('Delete')}
-          table={table}
-        />,
+        mppFile && (
+          <MRT_ActionMenuItem
+            icon={<DatasetIcon />}
+            key="MPP270"
+            label="MPP270"
+            onClick={() => navigate(`/datasetJson?f=${encodeURIComponent(mppFile)}`)}
+            table={table}
+          />
+        ),
+        appCorpFile && (
+          <MRT_ActionMenuItem
+            icon={<DatasetIcon />}
+            key="APPCorp"
+            label="APPCorp"
+            onClick={() => navigate(`/datasetJson?f=${encodeURIComponent(appCorpFile)}`)}
+            table={table}
+          />
+        ),
         <MRT_ActionMenuItem
           icon={<DatasetIcon />}
           key="NLLP2021"
           label="NLLP2021"
-          onClick={() => console.info('Delete')}
+          onClick={() => navigate(`/datasetJson?f=${encodeURIComponent(nllpFile)}`)}
           table={table}
         />,
       ];
