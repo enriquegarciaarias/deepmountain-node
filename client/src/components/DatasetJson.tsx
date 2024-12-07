@@ -1,9 +1,12 @@
+import React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import CodeIcon from '@mui/icons-material/Code';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import DatasetIcon from '@mui/icons-material/Dataset';
+
+
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -91,12 +94,24 @@ const DatasetJson = () => {
     sorting,
   ]);
 
-  const columns = useMemo<MRT_ColumnDef<User>[]>(
-    () => [
-      { accessorKey: 'category', header: 'Category', },
-      { accessorKey: 'text', header: 'Texto', },
-    ],
-    [],
+  const columns = useMemo<MRT_ColumnDef<User>[]>(() => [
+    { accessorKey: 'category', header: 'Category' },
+    { accessorKey: 'text', header: 'Texto' },
+  ], []);
+
+
+
+  return (
+    <div>
+      {Array.isArray(data) && data.some(item => 'category' in item && 'text' in item) ? (
+        <MaterialReactTable columns={columns} data={data} />
+      ) : (
+        <div style={{ padding: '1rem', backgroundColor: '#0a0a0a', borderRadius: '4px', fontFamily: 'monospace' }}>
+          <h3>JSON Data:</h3>
+          <pre>{JSON.stringify(data, null, 2)}</pre>
+        </div>
+      )}
+    </div>
   );
 
   const table = useMaterialReactTable({

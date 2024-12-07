@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Box, Typography, Dialog, DialogContent, DialogTitle, IconButton, CircularProgress, Button } from '@mui/material';
+import Modal from '@mui/material/Modal';
+import CloseIcon from '@mui/icons-material/Close';
 import DatasetIcon from '@mui/icons-material/Dataset';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -42,7 +44,29 @@ const CorpusView = () => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
   const [pagination, setPagination] = useState<MRT_PaginationState>({ pageIndex: 0, pageSize: 10, });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<string>('');
+  const [modalLoading, setModalLoading] = useState(false);
+  const [modalError, setModalError] = useState(false);
   const navigate = useNavigate();
+
+
+  const handleModalClose = () => setModalOpen(false);
+
+  const handleButtonClick = async (fileUrl: string) => {
+    try {
+      const response = await fetch(`${apiUrl}/api/file?f=${encodeURIComponent(fileUrl)}`);
+      if (response.ok) {
+        const text = await response.text();
+        setModalContent(text);
+        setModalOpen(true);
+      } else {
+        console.error(`Failed to fetch file content for URL: ${fileUrl}`);
+      }
+    } catch (error) {
+      console.error(`Error fetching file for URL: ${fileUrl}`, error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -74,27 +98,58 @@ const CorpusView = () => {
       setIsRefetching(false);
     };
     fetchData();
-  }, [
-    columnFilters,
-    globalFilter,
-    pagination.pageIndex,
-    pagination.pageSize,
-    sorting,
-  ]);
+  }, [columnFilters, globalFilter, pagination.pageIndex, pagination.pageSize, sorting]);
 
+  const handleOpenModal = async (fileUrl: string) => {
+    setModalOpen(true);
+    setModalLoading(true);
+    setModalError(false);
+
+    try {
+      const response = await fetch(`/file?f=${encodeURIComponent(fileUrl)}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch file content');
+      }
+      const text = await response.text();
+      setModalContent(text);
+    } catch (error) {
+      setModalError(true);
+      console.error(error);
+    }
+    setModalLoading(false);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setModalContent('');
+  };
+
+  const renderCellWithButton = (handleButtonClick) => ({ cell }) => {
+    const { stat, file } = cell.getValue(); // Destructure 'stat' and 'file'
+    
+    if (stat === 'ok') {
+      return (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleButtonClick(file)}
+        >
+          OK
+        </Button>
+      );
+    }
+    
+    return stat; // Return 'stat' value if not 'ok'
+  };
+  
+  
   const columns = useMemo<MRT_ColumnDef<User>[]>(
     () => [
-      { accessorKey: 'appName', header: 'Nombre', },
-      { accessorKey: 'ppen', header: 'PP Eng', },
-      { accessorKey: 'ppes', header: 'PP Esp', },
-      {
-        accessorKey: 'tosen',
-        header: 'TOS Eng',
-      },
-      {
-        accessorKey: 'toses',
-        header: 'TOS Esp',
-      },
+      { accessorKey: 'appName', header: 'APK', },
+      { accessorKey: 'ppen', header: 'PP Eng', Cell: renderCellWithButton(handleButtonClick) },
+      { accessorKey: 'ppes', header: 'PP Esp', Cell: renderCellWithButton(handleButtonClick) },
+      { accessorKey: 'tosen', header: 'TOS Eng', Cell: renderCellWithButton(handleButtonClick) },
+      { accessorKey: 'toses', header: 'TOS Esp', Cell: renderCellWithButton(handleButtonClick) },
       {
         accessorKey: 'APPCorp.stat',
         header: 'APPCorp',
@@ -223,7 +278,39 @@ const CorpusView = () => {
       ) : null,
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <>
+      <MaterialReactTable table={table} />
+      <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="md" fullWidth>
+        <DialogTitle>
+          File Content
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseModal}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          {modalLoading ? (
+            <Box display="flex" justifyContent="center">
+              <CircularProgress />
+            </Box>
+          ) : modalError ? (
+            <Typography color="error">Failed to load content</Typography>
+          ) : (
+            <Typography component="pre">{modalContent}</Typography>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
 };
 
 export default CorpusView;

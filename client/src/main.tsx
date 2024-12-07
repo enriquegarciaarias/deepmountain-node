@@ -4,6 +4,7 @@ import { StrictMode } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import AppRoutes from './routes'; // Import routes directly
+import './styles/app.css';
 
 const darkTheme = createTheme({
   palette: {
